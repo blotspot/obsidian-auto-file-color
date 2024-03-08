@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, debounce } from 'obsidian';
+import { Plugin, debounce } from 'obsidian';
 import { AutoFileColorSettings, AutoFileColorSettingsTab, DEFAULT_SETTINGS } from 'src/settings/settings';
 import { ColorRule } from 'src/model/ColorRule'
 import { RuleType } from 'src/model/RuleType';
@@ -11,6 +11,8 @@ export default class AutoFileColorPlugin extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new AutoFileColorSettingsTab(this.app, this));
 		this.registerEvent(this.app.workspace.on('layout-change', () => this.applyColorStyles()));
+		this.registerEvent(this.app.metadataCache.on('changed', () => this.applyColorStyles()));
+		this.registerEvent(this.app.vault.on('rename', () => this.applyColorStyles()));
 		this.app.workspace.onLayoutReady(async () => this.applyColorStyles());
 	}
 
@@ -49,11 +51,12 @@ export default class AutoFileColorPlugin extends Plugin {
 	}
 
 	private applyRules(path: string, el: HTMLDivElement) {
-		const rule = this.settings.colorRules.find((rule) => this.ruleApplies(rule, path));
-
-		if (rule) {
-			addCustomClasses(el, rule);
-		}
+		this.settings.colorRules.forEach((rule) => {
+			removeCustomClasses(el, rule);
+			if (this.ruleApplies(rule, path)) {
+				addCustomClasses(el, rule);
+			}
+		});
 	}
 
 	private ruleApplies(rule: ColorRule, path: string): boolean {

@@ -1,4 +1,4 @@
-import { ColorRule } from "src/model/ColorRule";
+import { ColorRule } from 'src/model/ColorRule';
 
 export const updateRuleStyle = async (rule: ColorRule) => {
   const styleName = makeStyleName(rule);

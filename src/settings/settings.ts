@@ -11,34 +11,34 @@ export interface AutoFileColorSettings {
 export const DEFAULT_SETTINGS: AutoFileColorSettings = {
     colorRules: [
         {
-            id: "status-draft",
-            value: "status: draft",
+            id: 'status-draft',
+            value: 'status: draft',
             type: RuleType.Frontmatter,
-            color: "#f25c05"
+            color: '#f25c05'
         },
         {
-            id: "status-revised-draft",
-            value: "status: revised draft",
+            id: 'status-revised-draft',
+            value: 'status: revised draft',
             type: RuleType.Frontmatter,
-            color: "#f2b705"
+            color: '#f2b705'
         },
         {
-            id: "status-improvements",
-            value: "status: needs improvements",
+            id: 'status-improvements',
+            value: 'status: needs improvements',
             type: RuleType.Frontmatter,
-            color: "#618c03"
+            color: '#618c03'
         },
         {
-            id: "status-postable-draft",
-            value: "status: postable",
+            id: 'status-postable-draft',
+            value: 'status: postable',
             type: RuleType.Frontmatter,
-            color: "#71a8d9"
+            color: '#71a8d9'
         },
         {
-            id: "status-published",
-            value: "status: published",
+            id: 'status-published',
+            value: 'status: published',
             type: RuleType.Frontmatter,
-            color: "#c44545"
+            color: '#c44545'
         }
     ],
 }
@@ -52,7 +52,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
     }
 
     display(): void {
-        let { containerEl } = this;
+        const { containerEl } = this;
         containerEl.empty();
         containerEl.createEl('h1', { text: 'Auto File Color Settings' });
 
@@ -145,7 +145,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
         new ButtonComponent(ruleSettingDiv)
             .setButtonText('▲')
-            .setTooltip("Move Up")
+            .setTooltip('Move Up')
             .setClass('afc-rule-setting-item-up-button')
             .setDisabled(index == 0)
             .onClick(() => {
@@ -159,7 +159,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
         new ButtonComponent(ruleSettingDiv)
             .setButtonText('▼')
-            .setTooltip("Move Down")
+            .setTooltip('Move Down')
             .setClass('afc-rule-setting-item-down-button')
             .setDisabled(index == this.plugin.settings.colorRules.length - 1)
             .onClick(() => {
