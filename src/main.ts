@@ -1,7 +1,8 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, debounce } from 'obsidian';
-import { AutoFileColorSettings, AutoFileColorSettingsTab, DEFAULT_SETTINGS } from './settings';
-import { ColorRule } from '../model/ColorRule'
+import { AutoFileColorSettings, AutoFileColorSettingsTab, DEFAULT_SETTINGS } from 'src/settings/settings';
+import { ColorRule } from 'src/model/ColorRule'
 import { RuleType } from 'src/model/RuleType';
+import { addCustomClasses, removeCustomClasses, removeRuleStyles, updateRuleStyle } from 'src/util/helper';
 
 export default class AutoFileColorPlugin extends Plugin {
 	settings: AutoFileColorSettings;
@@ -16,47 +17,22 @@ export default class AutoFileColorPlugin extends Plugin {
 	onunload() {
 		// cleanup all custom styles
 		this.settings.colorRules.forEach((rule) => {
-			this.removeStyle(rule);
+			removeRuleStyles(rule);
 		});
 	}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		this.updateStyles();
+		this.updateRuleStyles();
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.updateStyles();
+		this.updateRuleStyles();
 	}
 
-	async updateStyles() {
-		this.settings.colorRules.forEach((rule) => this.updateStyle(rule));
-	}
-
-	async updateStyle(rule: ColorRule) {
-		const styleName = this.makeStyleName(rule);
-		this.updateCustomCSS(styleName, `
-			.${styleName} {
-				background-color: color-mix(in srgb, ${rule.color} 15%, transparent);
-			}
-		`);
-	}
-
-	addCustomCSS(cssstylename: string, css: string) {
-		const styleElement = document.createElement('style');
-		styleElement.id = cssstylename;
-		styleElement.innerText = css;
-		document.head.appendChild(styleElement);
-	}
-
-	updateCustomCSS(cssstylename: string, css: string) {
-		const styleElement = document.getElementById(cssstylename);
-		if (styleElement) {
-			styleElement.innerText = css;
-		} else {
-			this.addCustomCSS(cssstylename, css);
-		}
+	async updateRuleStyles() {
+		this.settings.colorRules.forEach((rule) => updateRuleStyle(rule));
 	}
 
 	applyColorStyles = debounce(this.applyColorStylesInternal, 50, true);
@@ -76,7 +52,7 @@ export default class AutoFileColorPlugin extends Plugin {
 		const rule = this.settings.colorRules.find((rule) => this.ruleApplies(rule, path));
 
 		if (rule) {
-			this.highlightNote(el, rule);
+			addCustomClasses(el, rule);
 		}
 	}
 
@@ -99,25 +75,7 @@ export default class AutoFileColorPlugin extends Plugin {
 		return normalizedFrontMatterValue === normalizedValueToHighlight;
 	}
 
-	highlightNote(element: Element, rule: ColorRule) {
-		element.classList.add(this.makeStyleName(rule));
-	}
-
-	unhighlightNote(element: Element) {
-		this.settings.colorRules.forEach((rule) => {
-			element.classList.remove(this.makeStyleName(rule));
-		});
-	}
-
-	async removeStyle(rule: ColorRule) {
-		const style = this.makeStyleName(rule);
-		const styleElement = document.getElementById(style);
-		if (styleElement) {
-			styleElement.remove();
-		}
-	}
-
-	makeStyleName(rule: ColorRule): string {
-		return `afc-${rule.id}-style`;
+	unhighlightFiles(element: Element) {
+		this.settings.colorRules.forEach((rule) => removeCustomClasses(element, rule));
 	}
 }

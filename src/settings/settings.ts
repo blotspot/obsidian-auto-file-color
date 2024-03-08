@@ -1,7 +1,8 @@
 import { App, PluginSettingTab, Setting, TextComponent, ButtonComponent, DropdownComponent, ColorComponent } from 'obsidian';
-import AutoFileColorPlugin from './main';
+import AutoFileColorPlugin from '../main';
 import { RuleType } from '../model/RuleType';
 import { ColorRule } from '../model/ColorRule';
+import { removeRuleStyles } from 'src/util/helper';
 
 export interface AutoFileColorSettings {
     colorRules: ColorRule[];
@@ -176,7 +177,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
             .setCta().onClick(() => {
                 this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter((r) => r.id !== rule.id);
                 this.plugin.saveSettings();
-                this.plugin.removeStyle(rule);
+                removeRuleStyles(rule);
                 ruleSettingDiv.remove();
             });
     }
