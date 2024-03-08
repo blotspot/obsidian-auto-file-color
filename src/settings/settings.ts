@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting, TextComponent, ButtonComponent, DropdownComponent, ColorComponent } from 'obsidian';
-import AutoFileColorPlugin from '../main';
-import { RuleType } from '../model/RuleType';
-import { ColorRule } from '../model/ColorRule';
+import AutoFileColorPlugin from 'src/main';
+import { RuleType } from 'src/model/RuleType';
+import { ColorRule } from 'src/model/ColorRule';
 import { removeRuleStyles } from 'src/util/helper';
 
 export interface AutoFileColorSettings {

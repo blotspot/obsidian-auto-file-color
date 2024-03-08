@@ -9,19 +9,19 @@ export const updateRuleStyle = async (rule: ColorRule) => {
 	`);
 }
 
-export const addCustomCSS = (cssstylename: string, css: string) => {
+export const addCustomCSS = (cssStyleName: string, css: string) => {
   const styleElement = document.createElement('style');
-  styleElement.id = cssstylename;
+  styleElement.id = cssStyleName;
   styleElement.innerText = css;
   document.head.appendChild(styleElement);
 }
 
-export const updateCustomCSS = (cssstylename: string, css: string) => {
-  const styleElement = document.getElementById(cssstylename);
+export const updateCustomCSS = (cssStyleName: string, css: string) => {
+  const styleElement = document.getElementById(cssStyleName);
   if (styleElement) {
     styleElement.innerText = css;
   } else {
-    addCustomCSS(cssstylename, css);
+    addCustomCSS(cssStyleName, css);
   }
 }
 

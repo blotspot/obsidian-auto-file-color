@@ -44,7 +44,7 @@ export default class AutoFileColorPlugin extends Plugin {
 		fileExplorers.forEach((fileExplorer) => {
 			Object.entries(fileExplorer.view.fileItems).forEach(
 				([path, fileItem]) => {
-					this.applyRules(path, fileItem.el);
+					this.applyRules(path, fileItem.selfEl);
 				}
 			)
 		})
@@ -76,9 +76,5 @@ export default class AutoFileColorPlugin extends Plugin {
 		const normalizedValueToHighlight = value?.toString().toLowerCase().trim();
 
 		return normalizedFrontMatterValue === normalizedValueToHighlight;
-	}
-
-	unhighlightFiles(element: Element) {
-		this.settings.colorRules.forEach((rule) => removeCustomClasses(element, rule));
 	}
 }
