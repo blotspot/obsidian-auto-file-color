@@ -1,8 +1,48 @@
-/*
+.afc-rules-container {
+    margin-bottom: 1em;
+    border-top: 1px solid var(--background-modifier-border);
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.afc-rule-setting-item,
+.afc-rule-setting-item:first-child {
+    padding: 0.35em 0;
+    justify-content: center;
+    border-top: 1px solid var(--background-modifier-border);
+}
 
-If your plugin does not need CSS, delete this file.
+.afc-rule-setting-item .setting-item-info {
+    display: none;
+}
 
-*/
+.afc-rule-setting-item .setting-item-control {
+    flex: none;
+}
+
+.afc-rule-settings-header-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 0.5fr 0.5fr 0.5fr;
+    /* gap: 10px; */
+    font-weight: bold;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.afc-rule-settings-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 0.5fr 0.5fr 0.5fr;
+    /* gap: 10px; */
+    align-items: center;
+    /* margin-bottom: 5px; */
+}
+
+.afc-rule-type-dropdown {
+    width: 10em;
+}
+
+.afc-rule-value-input {
+    width: 10em;
+}
+
+.afc-rule-setting-item-text-input {
+    width: 6em;
+}
