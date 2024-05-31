@@ -4,7 +4,8 @@ export const updateRuleStyle = async (rule: ColorRule) => {
   const styleName = makeStyleName(rule);
   updateCustomCSS(styleName, `
 		.${styleName} {
-			background-color: color-mix(in srgb, ${rule.color} 15%, transparent);
+			background-color: color-mix(in srgb, ${rule.color} 33%, transparent);
+			border: .2em solid color-mix(in srgb, ${rule.color} 33%, transparent);
 		}
 	`);
 }

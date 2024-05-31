@@ -1,5 +1,4 @@
-
 export enum RuleType {
-    Folder = "folder",
-    Frontmatter = "frontmatter"
+	Folder = "folder",
+	Frontmatter = "frontmatter",
 }

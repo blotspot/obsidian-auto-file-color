@@ -1,9 +1,9 @@
-import { RuleType } from 'src/model/RuleType';
+import { RuleType } from "src/model/RuleType";
 
-
-export interface ColorRule {
-    id: string;
-    value: string;
-    type: RuleType;
-    color: string;
-}
+export type ColorRule = {
+	id: string;
+	key: string;
+	value: string;
+	type: RuleType;
+	color: string;
+};

@@ -1,184 +1,217 @@
-import { App, PluginSettingTab, Setting, TextComponent, ButtonComponent, DropdownComponent, ColorComponent } from 'obsidian';
-import AutoFileColorPlugin from 'src/main';
-import { RuleType } from 'src/model/RuleType';
-import { ColorRule } from 'src/model/ColorRule';
-import { removeRuleStyles } from 'src/util/helper';
-
-export interface AutoFileColorSettings {
-    colorRules: ColorRule[];
-}
-
-export const DEFAULT_SETTINGS: AutoFileColorSettings = {
-    colorRules: [
-        {
-            id: 'status-draft',
-            value: 'status: draft',
-            type: RuleType.Frontmatter,
-            color: '#f25c05'
-        },
-        {
-            id: 'status-revised-draft',
-            value: 'status: revised draft',
-            type: RuleType.Frontmatter,
-            color: '#f2b705'
-        },
-        {
-            id: 'status-improvements',
-            value: 'status: needs improvements',
-            type: RuleType.Frontmatter,
-            color: '#618c03'
-        },
-        {
-            id: 'status-postable-draft',
-            value: 'status: postable',
-            type: RuleType.Frontmatter,
-            color: '#71a8d9'
-        },
-        {
-            id: 'status-published',
-            value: 'status: published',
-            type: RuleType.Frontmatter,
-            color: '#c44545'
-        }
-    ],
-}
+import { App, PluginSettingTab, Setting, TextComponent, ColorComponent } from "obsidian";
+import AutoFileColorPlugin from "src/main";
+import { RuleType } from "src/model/RuleType";
+import { ColorRule } from "src/model/ColorRule";
+import { removeRuleStyles } from "src/util/helper";
 
 export class AutoFileColorSettingsTab extends PluginSettingTab {
-    plugin: AutoFileColorPlugin;
+	plugin: AutoFileColorPlugin;
 
-    constructor(app: App, plugin: AutoFileColorPlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
+	constructor(app: App, plugin: AutoFileColorPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
 
-    display(): void {
-        const { containerEl } = this;
-        containerEl.empty();
-        containerEl.createEl('h1', { text: 'Auto File Color Settings' });
+	display(): void {
+		const { containerEl } = this;
+		containerEl.empty();
 
-        // Create a header row
-        const headerRow = containerEl.createEl('div', { cls: 'afc-rule-settings-header-row' });
+		new Setting(containerEl)
+			.setName("Notes Folder only")
+			.setDesc("Settings affect only default Folder for new Notes.")
+			.addToggle(toggle =>
+				toggle.setValue(this.plugin.settings.onlyMainFolder).onChange(async val => {
+					this.plugin.settings.onlyMainFolder = val;
+					await this.plugin.saveSettings();
+				}),
+			);
 
-        // Add labels for each column
-        headerRow.createEl('span', { text: 'Rule Type', cls: 'afc-rule-settings-column-rule-type' });
-        headerRow.createEl('span', { text: 'Value', cls: 'afc-rule-settings-column-rule-value' });
-        headerRow.createEl('span', { text: 'Color', cls: 'afc-rule-settings-column-rule-color' });
-        headerRow.createEl('span', { text: '', cls: 'afc-rule-settings-column-rule-button' });
+		new Setting(containerEl)
+			.setName("Rules")
+			.setDesc("Define all the rules for coloring files.")
+			.addButton(button =>
+				button.setButtonText("Add folder rule").onClick(() => {
+					const newRule: ColorRule = {
+						id: Date.now().toString(),
+						key: "",
+						value: "",
+						type: RuleType.Folder,
+						color: "",
+					};
+					this.plugin.settings.colorRules.push(newRule);
+					this.addRuleSetting(rulesContainer, newRule);
+					this.plugin.saveSettings();
+				}),
+			)
+			.addButton(button =>
+				button.setButtonText("Add frontmatter rule").onClick(() => {
+					const newRule: ColorRule = {
+						id: Date.now().toString(),
+						key: "",
+						value: "",
+						type: RuleType.Frontmatter,
+						color: "",
+					};
+					this.plugin.settings.colorRules.push(newRule);
+					this.addRuleSetting(rulesContainer, newRule);
+					this.plugin.saveSettings();
+				}),
+			);
 
-        const rulesContainer = containerEl.createEl('div', { cls: 'afc-rules-container' });
+		const rulesContainer = containerEl.createEl("div", {
+			cls: "afc-rules-container",
+		});
 
-        // Display existing rules
-        this.plugin.settings.colorRules.forEach((rule, index) => this.addRuleSetting(rulesContainer, rule, index));
+		// Display existing rules
+		this.plugin.settings.colorRules.forEach((rule, index) => this.addRuleSetting(rulesContainer, rule, index));
+	}
 
-        // Add new rule button
-        new ButtonComponent(containerEl)
-            .setButtonText('Add new rule')
-            .onClick(() => {
-                const newRule: ColorRule = {
-                    id: Date.now().toString(),
-                    value: '',
-                    type: RuleType.Folder,
-                    color: '#000000',
-                };
-                this.plugin.settings.colorRules.push(newRule);
-                this.addRuleSetting(rulesContainer, newRule);
-                this.plugin.saveSettings();
-            });
-    }
+	private addLabelInput(
+		row: Setting,
+		lb: (label: HTMLLabelElement) => void,
+		cb: (text: TextComponent) => void,
+	): Setting {
+		const container = row.controlEl.createDiv({
+			cls: "afc-rules-label-input-container",
+		});
 
-    addRuleSetting(
-        containerEl: HTMLElement,
-        rule: ColorRule,
-        index: number = this.plugin.settings.colorRules.length - 1,
-    ): void {
-        const ruleSettingDiv = containerEl.createEl('div', { cls: 'afc-rule-settings-row' });
+		const label = container.createEl("label");
+		container.append(label);
 
-        new Setting(ruleSettingDiv)
-            .setClass('afc-rule-setting-item')
-            .addDropdown((dropdown: DropdownComponent) => {
-                dropdown.addOption(RuleType.Folder, 'Folder');
-                dropdown.addOption(RuleType.Frontmatter, 'Frontmatter');
-                dropdown.setValue(rule.type);
-                dropdown.onChange((value) => {
-                    rule.type = value as RuleType;
-                    this.plugin.saveSettings();
-                });
-                dropdown.selectEl.classList.add('afc-rule-type-dropdown');
-            });
+		lb(label);
+		cb(new TextComponent(container));
 
-        new Setting(ruleSettingDiv)
-            // .setName('Value')
-            .setClass('afc-rule-setting-item')
-            .addText((text) => {
-                text.setPlaceholder('Enter rule value');
-                text.setValue(rule.value);
-                text.onChange((value) => {
-                    rule.value = value;
-                    this.plugin.saveSettings();
-                });
-                text.inputEl.classList.add('afc-rule-value-input');
-            });
+		return row;
+	}
 
-        const colorSetting = new Setting(ruleSettingDiv)
-            .setClass('afc-rule-setting-item');
+	private addRuleSetting(
+		containerEl: HTMLElement,
+		rule: ColorRule,
+		index: number = this.plugin.settings.colorRules.length - 1,
+	): void {
+		const ruleSettingDiv = containerEl.createEl("div");
 
-        const colorInput = new TextComponent(colorSetting.controlEl)
-            .setPlaceholder('Enter color hex code')
-            .setValue(rule.color);
-        colorInput.inputEl.classList.add('afc-rule-setting-item-text-input');
+		const row = new Setting(ruleSettingDiv);
+		if (rule.type === RuleType.Frontmatter) {
+			row.setName("#" + index + " Frontmatter Rule");
+			this.addLabelInput(
+				row,
+				label => {
+					label.setText("Key");
+				},
+				text => {
+					text.setPlaceholder("Enter frontmatter key");
+					text.inputEl.classList.add("afc-setting-key-input");
+					text.setValue(rule.key);
+					text.onChange(value => {
+						rule.key = value;
+						this.plugin.saveSettings();
+					});
+				},
+			);
+			this.addLabelInput(
+				row,
+				label => {
+					label.setText("Value");
+				},
+				text => {
+					text.setPlaceholder("Enter frontmatter value");
+					text.inputEl.classList.add("afc-setting-value-input");
+					text.setValue(rule.value);
+					text.onChange(value => {
+						rule.value = value;
+						this.plugin.saveSettings();
+					});
+				},
+			);
+		} else {
+			row.setName("#" + index + " Folder Rule");
+			this.addLabelInput(
+				row,
+				label => {
+					label.setText("Folder name");
+				},
+				text => {
+					text.setPlaceholder("Ender folder name");
+					text.inputEl.classList.add("afc-setting-value-input");
+					text.setValue(rule.value);
+					text.onChange(value => {
+						rule.value = value;
+						this.plugin.saveSettings();
+					});
+				},
+			);
+		}
 
-        const picker = new ColorComponent(colorSetting.controlEl)
-            .setValue(rule.color)
-            .onChange((color) => {
-                rule.color = color;
-                colorInput.setValue(color);
-                this.plugin.saveSettings();
-            });
+		let colorInput: TextComponent;
+		let colorPicker: ColorComponent;
 
-        colorInput.onChange((value: string) => {
-            if (/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value)) {
-                rule.color = value;
-                picker.setValue(value);
-                this.plugin.saveSettings();
-            }
-        });
+		this.addLabelInput(
+			row,
+			label => {
+				label.setText("Color");
+			},
+			text => {
+				colorInput = text;
+				text.setPlaceholder("Enter color hex code");
+				text.setValue(rule.color);
+				text.inputEl.classList.add("afc-setting-color-input");
+				text.onChange((value: string) => {
+					if (/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value)) {
+						rule.color = value;
+						colorPicker.setValue(value);
+						this.plugin.saveSettings();
+					}
+				});
+			},
+		);
 
-        new ButtonComponent(ruleSettingDiv)
-            .setButtonText('▲')
-            .setTooltip('Move Up')
-            .setClass('afc-rule-setting-item-up-button')
-            .setDisabled(index == 0)
-            .onClick(() => {
-                if (index > 0) {
-                    this.plugin.settings.colorRules.splice(index, 1);
-                    this.plugin.settings.colorRules.splice(index - 1, 0, rule);
-                    this.plugin.saveSettings();
-                    this.display();
-                }
-            });
+		row.addColorPicker(picker => {
+			picker.setValue(rule.color);
+			picker.onChange(color => {
+				rule.color = color;
+				colorInput.setValue(color);
+				this.plugin.saveSettings();
+			});
+		});
 
-        new ButtonComponent(ruleSettingDiv)
-            .setButtonText('▼')
-            .setTooltip('Move Down')
-            .setClass('afc-rule-setting-item-down-button')
-            .setDisabled(index == this.plugin.settings.colorRules.length - 1)
-            .onClick(() => {
-                if (index < this.plugin.settings.colorRules.length - 1) {
-                    this.plugin.settings.colorRules.splice(index, 1);
-                    this.plugin.settings.colorRules.splice(index + 1, 0, rule);
-                    this.plugin.saveSettings();
-                    this.display();
-                }
-            });
+		row.addButton(button => {
+			button.setButtonText("▲");
+			button.setTooltip("Move Up");
+			button.setDisabled(index == 0);
+			button.onClick(() => {
+				if (index > 0) {
+					this.plugin.settings.colorRules.splice(index, 1);
+					this.plugin.settings.colorRules.splice(index - 1, 0, rule);
+					this.plugin.saveSettings();
+					this.display();
+				}
+			});
+		});
 
-        new ButtonComponent(ruleSettingDiv)
-            .setButtonText('Remove')
-            .setClass('afc-rule-setting-item-remove-button')
-            .setCta().onClick(() => {
-                this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter((r) => r.id !== rule.id);
-                this.plugin.saveSettings();
-                removeRuleStyles(rule);
-                ruleSettingDiv.remove();
-            });
-    }
+		row.addButton(button => {
+			button.setButtonText("▼");
+			button.setTooltip("Move Down");
+			button.setDisabled(index == this.plugin.settings.colorRules.length - 1);
+			button.onClick(() => {
+				if (index < this.plugin.settings.colorRules.length - 1) {
+					this.plugin.settings.colorRules.splice(index, 1);
+					this.plugin.settings.colorRules.splice(index + 1, 0, rule);
+					this.plugin.saveSettings();
+					this.display();
+				}
+			});
+		});
+
+		row.addButton(button => {
+			button.setButtonText("Remove");
+			button.setCta();
+			button.onClick(() => {
+				this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
+				this.plugin.saveSettings();
+				removeRuleStyles(rule);
+				ruleSettingDiv.remove();
+			});
+		});
+	}
 }

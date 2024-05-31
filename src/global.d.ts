@@ -1,21 +1,23 @@
-import { View, WorkspaceLeaf } from 'obsidian'
+import { View, WorkspaceLeaf } from "obsidian";
 
-declare module 'obsidian' {
-    interface Workspace {
-        getLeavesOfType(viewType: 'file-explorer'): ExplorerLeaf[]
-    }
+// Augmenting the 'obsidian' module
+declare module "obsidian" {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+	interface Workspace {
+		getLeavesOfType(viewType: "file-explorer"): ExplorerLeaf[];
+	}
 }
 
-interface ExplorerLeaf extends WorkspaceLeaf {
-    view: ExplorerView
-}
+type ExplorerView = {
+	fileItems: Record<
+		string,
+		{
+			selfEl: HTMLDivElement;
+			el: HTMLDivElement;
+		}
+	>;
+} & View;
 
-interface ExplorerView extends View {
-    fileItems: Record<
-        string,
-        {
-            selfEl: HTMLDivElement,
-            el: HTMLDivElement,
-        }
-    >
-}
+type ExplorerLeaf = {
+	view: ExplorerView;
+} & WorkspaceLeaf;

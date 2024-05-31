@@ -1,48 +1,33 @@
-.afc-rules-container {
-    margin-bottom: 1em;
-    border-top: 1px solid var(--background-modifier-border);
+.afc-rules-container .setting-item-control {
+    flex-wrap: wrap;
 }
 
-.afc-rule-setting-item,
-.afc-rule-setting-item:first-child {
-    padding: 0.35em 0;
-    justify-content: center;
-    border-top: 1px solid var(--background-modifier-border);
+.afc-setting-key-input {
+    max-width: 8em;
 }
 
-.afc-rule-setting-item .setting-item-info {
-    display: none;
+.afc-setting-color-input {
+    max-width: 7em;
 }
 
-.afc-rule-setting-item .setting-item-control {
-    flex: none;
+.afc-setting-value-input {
+    width: auto;
 }
 
-.afc-rule-settings-header-row {
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr 0.5fr 0.5fr 0.5fr;
-    /* gap: 10px; */
+.afc-setting-key-input,
+.afc-setting-color-input,
+.afc-setting-value-input {
+    min-width: 5em;
+}
+
+.afc-rules-label-input-container {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.afc-rules-label-input-container label {
+    font-size: 0.8em;
     font-weight: bold;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.afc-rule-settings-row {
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr 0.5fr 0.5fr 0.5fr;
-    /* gap: 10px; */
-    align-items: center;
-    /* margin-bottom: 5px; */
-}
-
-.afc-rule-type-dropdown {
-    width: 10em;
-}
-
-.afc-rule-value-input {
-    width: 10em;
-}
-
-.afc-rule-setting-item-text-input {
-    width: 6em;
+    padding-left: .5em;
 }
