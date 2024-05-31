@@ -1,10 +1,9 @@
-import { Plugin, WorkspaceLeaf, debounce } from "obsidian";
+import { Plugin, debounce } from "obsidian";
 import { AutoFileColorSettingsTab } from "src/settings/settings";
 import { AutoFileColorSettings, DEFAULT_SETTINGS } from "src/settings/settings-data";
 import { ColorRule } from "src/model/ColorRule";
 import { RuleType } from "src/model/RuleType";
 import { addCustomClasses, removeCustomClasses, removeRuleStyles, updateRuleStyle } from "src/util/helper";
-import { ExplorerLeaf } from "./global";
 
 export default class AutoFileColorPlugin extends Plugin {
 	settings: AutoFileColorSettings;
@@ -42,8 +41,7 @@ export default class AutoFileColorPlugin extends Plugin {
 	colorFiles = debounce(this.colorFilesInternal, 50, true);
 
 	private colorFilesInternal() {
-		const fileExplorers = this.app.workspace.getLeavesOfType("file-explorer");
-		fileExplorers.forEach(fileExplorer => {
+		this.app.workspace.getLeavesOfType("file-explorer").forEach(fileExplorer => {
 			Object.entries(fileExplorer.view.fileItems).forEach(([path, fileItem]) => {
 				this.applyRules(path, fileItem.selfEl);
 			});
@@ -54,7 +52,12 @@ export default class AutoFileColorPlugin extends Plugin {
 		this.settings.colorRules.forEach(rule => {
 			removeCustomClasses(el, rule);
 			if (this.doesRuleApply(rule, path)) {
-				addCustomClasses(el, rule);
+				if (el.classList.contains("is-folder-note")) {
+					const folderEl = el.parentElement?.parentElement?.previousElementSibling;
+					if (folderEl) addCustomClasses(folderEl, rule);
+				} else {
+					addCustomClasses(el, rule);
+				}
 			}
 		});
 	}
