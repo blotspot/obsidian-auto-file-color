@@ -52,12 +52,7 @@ export default class AutoFileColorPlugin extends Plugin {
 		this.settings.colorRules.forEach(rule => {
 			removeCustomClasses(el, rule);
 			if (this.doesRuleApply(rule, path)) {
-				if (el.classList.contains("is-folder-note")) {
-					const folderEl = el.parentElement?.parentElement?.previousElementSibling;
-					if (folderEl) addCustomClasses(folderEl, rule);
-				} else {
-					addCustomClasses(el, rule);
-				}
+				addCustomClasses(el, rule);
 			}
 		});
 	}

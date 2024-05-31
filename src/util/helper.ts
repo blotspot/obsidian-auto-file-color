@@ -1,3 +1,4 @@
+import { FileSystemAdapter, Vault } from "obsidian";
 import { ColorRule } from "src/model/ColorRule";
 
 export const updateRuleStyle = async (rule: ColorRule) => {
@@ -11,22 +12,6 @@ export const updateRuleStyle = async (rule: ColorRule) => {
 		}
 	`,
 	);
-};
-
-export const addCustomCSS = (cssStyleName: string, css: string) => {
-	const styleElement = document.createElement("style");
-	styleElement.id = cssStyleName;
-	styleElement.innerText = css;
-	document.head.appendChild(styleElement);
-};
-
-export const updateCustomCSS = (cssStyleName: string, css: string) => {
-	const styleElement = document.getElementById(cssStyleName);
-	if (styleElement) {
-		styleElement.innerText = css;
-	} else {
-		addCustomCSS(cssStyleName, css);
-	}
 };
 
 export const removeRuleStyles = async (rule: ColorRule) => {
@@ -50,6 +35,31 @@ export const removeCustomClasses = (element: Element, rule: ColorRule) => {
 	element.classList.remove(makeStyleName(rule));
 };
 
-export const makeStyleName = (rule: ColorRule): string => {
+export const getMainFolder = (vault: Vault) => {
+	let path = "";
+	const adapter = vault.adapter;
+	if (adapter instanceof FileSystemAdapter) {
+		path = adapter.getBasePath();
+	}
+	return path + "/" + vault.configDir;
+};
+
+const addCustomCSS = (cssStyleName: string, css: string) => {
+	const styleElement = document.createElement("style");
+	styleElement.id = cssStyleName;
+	styleElement.innerText = css;
+	document.head.appendChild(styleElement);
+};
+
+const updateCustomCSS = (cssStyleName: string, css: string) => {
+	const styleElement = document.getElementById(cssStyleName);
+	if (styleElement) {
+		styleElement.innerText = css;
+	} else {
+		addCustomCSS(cssStyleName, css);
+	}
+};
+
+const makeStyleName = (rule: ColorRule): string => {
 	return `afc-${rule.id}-style`;
 };
