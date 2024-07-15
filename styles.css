@@ -31,3 +31,11 @@
     font-weight: bold;
     padding-left: .5em;
 }
+
+.afc-settings-row-group {
+    display: flex;
+    flex-flow: row nowrap;
+    align-content: center;
+    justify-content: center;
+    gap: .25em;
+}

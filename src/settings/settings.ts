@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, TextComponent, ColorComponent } from "obsidian";
+import { App, PluginSettingTab, Setting, TextComponent, ColorComponent, ButtonComponent } from "obsidian";
 import AutoFileColorPlugin from "src/main";
 import { RuleType } from "src/model/RuleType";
 import { ColorRule } from "src/model/ColorRule";
@@ -67,11 +67,11 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 	}
 
 	private addLabelInput(
-		row: Setting,
+		row: HTMLElement,
 		lb: (label: HTMLLabelElement) => void,
 		cb: (text: TextComponent) => void,
-	): Setting {
-		const container = row.controlEl.createDiv({
+	): void {
+		const container = row.createDiv({
 			cls: "afc-rules-label-input-container",
 		});
 
@@ -80,8 +80,6 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
 		lb(label);
 		cb(new TextComponent(container));
-
-		return row;
 	}
 
 	private addRuleSetting(
@@ -92,10 +90,12 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 		const ruleSettingDiv = containerEl.createEl("div");
 
 		const row = new Setting(ruleSettingDiv);
+		const rowEl = row.controlEl;
 		if (rule.type === RuleType.Frontmatter) {
 			row.setName("#" + index + " Frontmatter Rule");
+			row.setDesc("Key and value of frontmatter property");
 			this.addLabelInput(
-				row,
+				rowEl,
 				label => {
 					label.setText("Key");
 				},
@@ -110,7 +110,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 				},
 			);
 			this.addLabelInput(
-				row,
+				rowEl,
 				label => {
 					label.setText("Value");
 				},
@@ -125,9 +125,10 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 				},
 			);
 		} else {
-			row.setName("#" + index + " Folder Rule");
+			row.setName("#" + index + " File Rule");
+			row.setDesc("File- or foldername");
 			this.addLabelInput(
-				row,
+				rowEl,
 				label => {
 					label.setText("Folder name");
 				},
@@ -143,11 +144,12 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			);
 		}
 
+		const colorGroup = rowEl.createDiv({ cls: "afc-settings-row-group" });
 		let colorInput: TextComponent;
 		let colorPicker: ColorComponent;
 
 		this.addLabelInput(
-			row,
+			colorGroup,
 			label => {
 				label.setText("Color");
 			},
@@ -175,43 +177,43 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			});
 		});
 
-		row.addButton(button => {
-			button.setButtonText("▲");
-			button.setTooltip("Move Up");
-			button.setDisabled(index == 0);
-			button.onClick(() => {
-				if (index > 0) {
-					this.plugin.settings.colorRules.splice(index, 1);
-					this.plugin.settings.colorRules.splice(index - 1, 0, rule);
-					this.plugin.saveSettings();
-					this.display();
-				}
-			});
-		});
+		const btnGroup = rowEl.createDiv({ cls: "afc-settings-row-group" });
 
-		row.addButton(button => {
-			button.setButtonText("▼");
-			button.setTooltip("Move Down");
-			button.setDisabled(index == this.plugin.settings.colorRules.length - 1);
-			button.onClick(() => {
-				if (index < this.plugin.settings.colorRules.length - 1) {
-					this.plugin.settings.colorRules.splice(index, 1);
-					this.plugin.settings.colorRules.splice(index + 1, 0, rule);
-					this.plugin.saveSettings();
-					this.display();
-				}
-			});
-		});
-
-		row.addButton(button => {
-			button.setButtonText("Remove");
-			button.setCta();
-			button.onClick(() => {
-				this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
+		const mvUpBtn = new ButtonComponent(btnGroup);
+		mvUpBtn.setButtonText("▲");
+		mvUpBtn.setTooltip("Move Up");
+		mvUpBtn.setDisabled(index == 0);
+		mvUpBtn.onClick(() => {
+			if (index > 0) {
+				this.plugin.settings.colorRules.splice(index, 1);
+				this.plugin.settings.colorRules.splice(index - 1, 0, rule);
 				this.plugin.saveSettings();
-				removeRuleStyles(rule);
-				ruleSettingDiv.remove();
-			});
+				this.display();
+			}
+		});
+
+		const mvDownBtn = new ButtonComponent(btnGroup);
+		mvDownBtn.setButtonText("▼");
+		mvDownBtn.setTooltip("Move Down");
+		mvDownBtn.setDisabled(index == this.plugin.settings.colorRules.length - 1);
+		mvDownBtn.onClick(() => {
+			if (index < this.plugin.settings.colorRules.length - 1) {
+				this.plugin.settings.colorRules.splice(index, 1);
+				this.plugin.settings.colorRules.splice(index + 1, 0, rule);
+				this.plugin.saveSettings();
+				this.display();
+			}
+		});
+
+		const rmBtn = new ButtonComponent(btnGroup);
+		rmBtn.setButtonText("x");
+		rmBtn.setTooltip("Remove");
+		rmBtn.setCta();
+		rmBtn.onClick(() => {
+			this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
+			this.plugin.saveSettings();
+			removeRuleStyles(rule);
+			ruleSettingDiv.remove();
 		});
 	}
 }
