@@ -18,7 +18,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Notes Folder only")
-			.setDesc("Settings affect only default Folder for new Notes.")
+			.setDesc("Settings affect only default Folder for new nnotes.")
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.onlyMainFolder).onChange(async val => {
 					this.plugin.settings.onlyMainFolder = val;
@@ -92,7 +92,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 		const row = new Setting(ruleSettingDiv);
 		const rowEl = row.controlEl;
 		if (rule.type === RuleType.Frontmatter) {
-			row.setName("#" + index + " Frontmatter Rule");
+			row.setName(`#${index} Frontmatter Rule`);
 			row.setDesc("Key and value of frontmatter property");
 			this.addLabelInput(
 				rowEl,
@@ -169,6 +169,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 		);
 
 		row.addColorPicker(picker => {
+			colorPicker = picker;
 			picker.setValue(rule.color);
 			picker.onChange(color => {
 				rule.color = color;
