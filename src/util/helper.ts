@@ -1,4 +1,5 @@
 import { FileSystemAdapter, Vault } from "obsidian";
+import { ExplorerItem } from "src/global";
 import { ColorRule } from "src/model/ColorRule";
 
 export const updateRuleStyle = async (rule: ColorRule) => {
@@ -8,7 +9,7 @@ export const updateRuleStyle = async (rule: ColorRule) => {
 		`
 		.${styleName} {
 			background-color: color-mix(in srgb, ${rule.color} 33%, transparent);
-			border: .2em solid color-mix(in srgb, ${rule.color} 33%, transparent);
+			border-color: color-mix(in srgb, ${rule.color} 33%, transparent);
 		}
 	`,
 	);
@@ -22,13 +23,13 @@ export const removeRuleStyles = async (rule: ColorRule) => {
 	}
 };
 
-export const addCustomClasses = (element: Element, rule: ColorRule) => {
+export const addCustomClasses = (item: ExplorerItem, rule: ColorRule) => {
 	// check for folder note plugin css class
-	if (element.classList.contains("is-folder-note")) {
-		const folderEl = element.parentElement?.parentElement?.previousElementSibling;
-		if (folderEl) element = folderEl;
+	if (item.selfEl.classList.contains("is-folder-note")) {
+		item = item.parent;
+		console.log(item);
 	}
-	element.classList.add(makeStyleName(rule));
+	item.selfEl.classList.add(makeStyleName(rule));
 };
 
 export const removeCustomClasses = (element: Element, rule: ColorRule) => {

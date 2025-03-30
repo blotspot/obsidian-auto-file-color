@@ -39,3 +39,7 @@
     justify-content: center;
     gap: .25em;
 }
+
+.afc-item-border {
+    border: .2em solid;
+}

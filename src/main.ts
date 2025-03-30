@@ -4,6 +4,7 @@ import { AutoFileColorSettings, DEFAULT_SETTINGS } from "src/settings/settings-d
 import { ColorRule } from "src/model/ColorRule";
 import { RuleType } from "src/model/RuleType";
 import { addCustomClasses, removeCustomClasses, removeRuleStyles, updateRuleStyle } from "src/util/helper";
+import { ExplorerItem } from "./global";
 
 export default class AutoFileColorPlugin extends Plugin {
 	settings: AutoFileColorSettings;
@@ -43,16 +44,16 @@ export default class AutoFileColorPlugin extends Plugin {
 	private colorFilesInternal() {
 		this.app.workspace.getLeavesOfType("file-explorer").forEach(fileExplorer => {
 			Object.entries(fileExplorer.view.fileItems).forEach(([path, fileItem]) => {
-				this.applyRules(path, fileItem.selfEl);
+				this.applyRules(path, fileItem);
 			});
 		});
 	}
 
-	private applyRules(path: string, el: HTMLDivElement) {
+	private applyRules(path: string, ei: ExplorerItem) {
 		this.settings.colorRules.forEach(rule => {
-			removeCustomClasses(el, rule);
+			removeCustomClasses(ei.selfEl, rule);
 			if (this.doesRuleApply(rule, path)) {
-				addCustomClasses(el, rule);
+				addCustomClasses(ei, rule);
 			}
 		});
 	}

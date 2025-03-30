@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-auto-color",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "colors files in file viewer based on frontmatter.",
 	"main": "main.js",
 	"scripts": {

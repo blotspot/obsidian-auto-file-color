@@ -8,13 +8,15 @@ declare module "obsidian" {
 	}
 }
 
+type ExplorerItem = {
+	parent: ExplorerItem;
+	selfEl: HTMLDivElement;
+};
+
 type ExplorerView = {
 	fileItems: Record<
 		string,
-		{
-			selfEl: HTMLDivElement;
-			el: HTMLDivElement;
-		}
+		ExplorerItem
 	>;
 } & View;
 
