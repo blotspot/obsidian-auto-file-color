@@ -27,7 +27,6 @@ export const addCustomClasses = (item: ExplorerItem, rule: ColorRule) => {
 	// check for folder note plugin css class
 	if (item.selfEl.classList.contains("is-folder-note")) {
 		item = item.parent;
-		console.log(item);
 	}
 	item.selfEl.classList.add(makeStyleName(rule));
 };
