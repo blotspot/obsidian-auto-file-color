@@ -1,4 +1,12 @@
-import { App, PluginSettingTab, Setting, TextComponent, ColorComponent, ButtonComponent } from "obsidian";
+import {
+	App,
+	PluginSettingTab,
+	Setting,
+	TextComponent,
+	ColorComponent,
+	ButtonComponent,
+	ExtraButtonComponent,
+} from "obsidian";
 import AutoFileColorPlugin from "src/main";
 import { RuleType } from "src/model/RuleType";
 import { ColorRule } from "src/model/ColorRule";
@@ -18,7 +26,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Notes Folder only")
-			.setDesc("Settings affect only default Folder for new nnotes.")
+			.setDesc("Settings affect only default Folder for new notes.")
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.onlyMainFolder).onChange(async val => {
 					this.plugin.settings.onlyMainFolder = val;
@@ -180,8 +188,8 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 
 		const btnGroup = rowEl.createDiv({ cls: "afc-settings-row-group" });
 
-		const mvUpBtn = new ButtonComponent(btnGroup);
-		mvUpBtn.setButtonText("▲");
+		const mvUpBtn = new ExtraButtonComponent(btnGroup);
+		mvUpBtn.setIcon("chevron-up");
 		mvUpBtn.setTooltip("Move Up");
 		mvUpBtn.setDisabled(index == 0);
 		mvUpBtn.onClick(() => {
@@ -193,8 +201,8 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			}
 		});
 
-		const mvDownBtn = new ButtonComponent(btnGroup);
-		mvDownBtn.setButtonText("▼");
+		const mvDownBtn = new ExtraButtonComponent(btnGroup);
+		mvDownBtn.setIcon("chevron-down");
 		mvDownBtn.setTooltip("Move Down");
 		mvDownBtn.setDisabled(index == this.plugin.settings.colorRules.length - 1);
 		mvDownBtn.onClick(() => {
@@ -206,10 +214,9 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			}
 		});
 
-		const rmBtn = new ButtonComponent(btnGroup);
-		rmBtn.setButtonText("x");
+		const rmBtn = new ExtraButtonComponent(btnGroup);
+		rmBtn.setIcon("x");
 		rmBtn.setTooltip("Remove");
-		rmBtn.setCta();
 		rmBtn.onClick(() => {
 			this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
 			this.plugin.saveSettings();
