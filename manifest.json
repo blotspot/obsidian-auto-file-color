@@ -1,7 +1,7 @@
 {
 	"id": "auto-file-color",
 	"name": "Auto File Color",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"minAppVersion": "0.15.0",
 	"description": "Colors the file in the explorer based on settings.",
 	"author": "blotspot",
