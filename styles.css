@@ -1,23 +1,26 @@
-.afc-rules-container .setting-item-control {
+.afc-settings-row {
     flex-wrap: wrap;
 }
 
-.afc-setting-key-input {
-    max-width: 8em;
+.afc-settings-row-group {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25em;
 }
 
-.afc-setting-color-input {
-    max-width: 7em;
+.is-phone .afc-settings-row-group:last-child {
+    padding-top: 0.75em;
 }
 
-.afc-setting-value-input {
-    width: auto;
+.afc-mv-button-group {
+    display: flex;
+    flex-flow: column nowrap;
 }
 
-.afc-setting-key-input,
-.afc-setting-color-input,
-.afc-setting-value-input {
-    min-width: 5em;
+.is-phone .afc-mv-button-group {
+    display: none;
 }
 
 .afc-rules-label-input-container {
@@ -32,14 +35,6 @@
     padding-left: .5em;
 }
 
-.afc-settings-row-group {
-    display: flex;
-    flex-flow: row nowrap;
-    align-content: center;
-    justify-content: center;
-    gap: .25em;
-}
-
-.afc-item-border {
-    border: .2em solid;
+.is-phone input[type="color"] {
+    width: 52%;
 }

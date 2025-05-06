@@ -95,15 +95,17 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 		rule: ColorRule,
 		index: number = this.plugin.settings.colorRules.length - 1,
 	): void {
-		const ruleSettingDiv = containerEl.createEl("div");
+		const row = new Setting(containerEl);
 
-		const row = new Setting(ruleSettingDiv);
-		const rowEl = row.controlEl;
+		const btnGroup = createDiv({ cls: "afc-mv-button-group" });
+		const inputContainer = createDiv({ cls: "afc-settings-row", parent: row.controlEl });
+		const keyValueDiv = createDiv({ cls: "afc-settings-row-group", parent: inputContainer });
+
 		if (rule.type === RuleType.Frontmatter) {
 			row.setName(`#${index} Frontmatter Rule`);
 			row.setDesc("Key and value of frontmatter property");
 			this.addLabelInput(
-				rowEl,
+				keyValueDiv,
 				label => {
 					label.setText("Key");
 				},
@@ -118,7 +120,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 				},
 			);
 			this.addLabelInput(
-				rowEl,
+				keyValueDiv,
 				label => {
 					label.setText("Value");
 				},
@@ -136,12 +138,12 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			row.setName("#" + index + " File Rule");
 			row.setDesc("File- or foldername");
 			this.addLabelInput(
-				rowEl,
+				keyValueDiv,
 				label => {
 					label.setText("Folder name");
 				},
 				text => {
-					text.setPlaceholder("Ender folder name");
+					text.setPlaceholder("Enter folder name");
 					text.inputEl.classList.add("afc-setting-value-input");
 					text.setValue(rule.value);
 					text.onChange(value => {
@@ -152,7 +154,7 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			);
 		}
 
-		const colorGroup = rowEl.createDiv({ cls: "afc-settings-row-group" });
+		const colorGroup = createDiv({ cls: "afc-settings-row-group", parent: inputContainer });
 		let colorInput: TextComponent;
 		let colorPicker: ColorComponent;
 
@@ -176,17 +178,15 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			},
 		);
 
-		row.addColorPicker(picker => {
-			colorPicker = picker;
-			picker.setValue(rule.color);
-			picker.onChange(color => {
-				rule.color = color;
-				colorInput.setValue(color);
-				this.plugin.saveSettings();
-			});
+		colorPicker = new ColorComponent(colorGroup);
+		colorPicker.setValue(rule.color);
+		colorPicker.onChange(color => {
+			rule.color = color;
+			colorInput.setValue(color);
+			this.plugin.saveSettings();
 		});
 
-		const btnGroup = rowEl.createDiv({ cls: "afc-settings-row-group" });
+		row.settingEl.prepend(btnGroup);
 
 		const mvUpBtn = new ExtraButtonComponent(btnGroup);
 		mvUpBtn.setIcon("chevron-up");
@@ -214,14 +214,15 @@ export class AutoFileColorSettingsTab extends PluginSettingTab {
 			}
 		});
 
-		const rmBtn = new ExtraButtonComponent(btnGroup);
-		rmBtn.setIcon("x");
-		rmBtn.setTooltip("Remove");
-		rmBtn.onClick(() => {
-			this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
-			this.plugin.saveSettings();
-			removeRuleStyles(rule);
-			ruleSettingDiv.remove();
+		row.addExtraButton(rmBtn => {
+			rmBtn.setIcon("x");
+			rmBtn.setTooltip("Remove");
+			rmBtn.onClick(() => {
+				this.plugin.settings.colorRules = this.plugin.settings.colorRules.filter(r => r.id !== rule.id);
+				this.plugin.saveSettings();
+				removeRuleStyles(rule);
+				row.settingEl.remove();
+			});
 		});
 	}
 }
